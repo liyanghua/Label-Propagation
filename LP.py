@@ -1,16 +1,18 @@
 """
-Name: Akshay Bhat
+Label Propagation algorithm using Multiprocessing 
 
+Name:       Akshay Bhat
+WebSite:    http://www.akshaybhat.com
 
 
 
 """
-import multiprocessing, random, time
+import random, time,sys
+from multiprocessing import Pool,Array,cpu_count
 
-THREADS = 2 
+# Global Variable THREAD defines number of processes to be used
+THREADS = multiprocessing.cpu_count() 
 ITERATIONS = 5
-LabelNew={};
-
 
 
 
@@ -48,16 +50,18 @@ def Propagate(start,end,LabelP,AdjP,MapListP):
 if __name__ == '__main__':
     Label = {}    # A Dictionary for storing labels of current node
     Adj = {}      # A Python Dictionary since it allows faster acess
-    MapList =[]   # a list randomely ordered 
+    MapList = []   # a list randomely ordered 
 
+    #Parse the Command line Options
+    filename = 
 
     # Load the Data in adjecancy list and initialize labels
      
 
     data = open("Network.txt")
     for entry in data:
-        source = entry.rstrip('\n').split(' ')[0]
-        target = entry.rstrip('\n').split(' ')[1]
+        source = int(entry.rstrip('\n').split(' ')[0])
+        target = int(entry.rstrip('\n').split(' ')[1])
         Label[source] = source  #initialize the label to itself 
         Label[target] = target  # just to be sure initialize the target as well
         if not(source in Adj):
