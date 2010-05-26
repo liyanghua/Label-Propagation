@@ -1,113 +1,105 @@
 """
 Label Propagation algorithm using Multiprocessing 
 
+Repo:       http://github.com/AKSHAYUBHAT/Label-Propagation
+
 Name:       Akshay Bhat
 WebSite:    http://www.akshaybhat.com
 
 
 
 """
-import random, time,sys
+import random, time, sys, array
 from multiprocessing import Pool,Array,cpu_count
 
 # Global Variable THREAD defines number of processes to be used
-THREADS = multiprocessing.cpu_count() 
-ITERATIONS = 5
+THREADS = cpu_count() 
 
 
-
-def Propagate(start,end,LabelP,AdjP,MapListP):
-    Res={};
-    print "running Thread with range: ",start,end
-    def maxVote(nLabels):
-        count = {}
-        maxList = []
-        maxCount = 0
-        for nLabel in nLabels:
-            if nLabel in count:
-                count[nLabel] += 1
-            else:
-                count[nLabel] = 1
-        #Check if the count is max
-            if count[nLabel] > maxCount:
-                maxCount = count[nLabel];
-                maxList = [nLabel,]
-            elif count[nLabel]==maxCount:
-                maxList.append(nLabel)
-        return random.choice(maxList)        
-                
-    for num in range(start,end):
-        node=MapListP[num]
-        nLabels = [LabelP[k] for k in AdjP[node]]
-        if (nLabels!=[]):
-            Res[node] = maxVote(nLabels)
+def maxVote(nLabels):
+    count = {}
+    maxList = []
+    maxCount = 0
+    for nLabel in nLabels:
+        if nLabel in count:
+            count[nLabel] += 1
         else:
-            Res[node]=LabelP[node]
-    print "finished a worker"
-    return Res
+            count[nLabel] = 1
+    #Check if the count is max
+        if count[nLabel] > maxCount:
+            maxCount = count[nLabel];
+            maxList = [nLabel,]
+        elif count[nLabel]==maxCount:
+            maxList.append(nLabel)
+    return random.choice(maxList)        
+                
+
 
                 
 if __name__ == '__main__':
-    Label = {}    # A Dictionary for storing labels of current node
     Adj = {}      # A Python Dictionary since it allows faster acess
-    MapList = []   # a list randomely ordered 
 
     #Parse the Command line Options
-    filename = 
+    if len(sys.argv)>1:
+        filename = sys.argv[1] 
+    else:
+        filename = 'Network.txt'
+
+    if len(sys.argv)>2:
+        iterations = int(sys.argv[2]) 
+    else:
+        iterations = 5
+
+        
+    Label = array.array('i',range(1000000))    # An array of type int is used since lookup for an array is O(1)
 
     # Load the Data in adjecancy list and initialize labels
      
 
-    data = open("Network.txt")
+    data = open(filename)
     for entry in data:
-        source = int(entry.rstrip('\n').split(' ')[0])
-        target = int(entry.rstrip('\n').split(' ')[1])
-        Label[source] = source  #initialize the label to itself 
-        Label[target] = target  # just to be sure initialize the target as well
-        if not(source in Adj):
-            Adj[source] = [target,] #initialize the list
+        try:
+            source = int(entry.rstrip('\n').split(' ')[0])
+            target = int(entry.rstrip('\n').split(' ')[1])
+        except:
+            print " error while reading the file on line:", entry
         else:
-            Adj[source] += [target,]
-        if not(target in Adj):
-            Adj[target]=[]
+            Label[source] = source  #initialize the label to itself 
+            Label[target] = target  # just to be sure initialize the target as well
+            if not(source in Adj):
+                Adj[source] = [target,] #initialize the list
+            else:
+                Adj[source] += [target,]
+            if not(target in Adj):
+                Adj[target]=[]
     data.close()
 
-    #Create MapList
-    MapList = Adj.keys()
+    # Enumerate all nodes 
+    MapKeys = Adj.keys()
 
 
-    # used to determine which range of nodes to be assigned to which thread
-    MapRange=range(0,len(MapList)+1,len(MapList)/THREADS)
+    for iteration in range(1,iterations+1):
+        start=time.time()
 
-    MapRange[-1]=len(MapList)
+        # Prepare input for the Map
+        MapInput = []
+        random.shuffle(MapKeys)
 
-    for k in range(ITERATIONS):
-        random.shuffle(MapList)
-        args=[];
-        print "starting pool"
-        pool = multiprocessing.Pool(processes=THREADS)
-        result=[]
-        for k in range(THREADS):
-            args.append((MapRange[k],MapRange[k+1],Label,Adj.copy(),MapList))
-        for k in range(THREADS):
-            print "created an arg"
-            result.append(pool.apply_async(Propagate,args[k]))
-            print "applied a process"
-        print "started threads"
-        pool.close();
-        print "close called"
-        pool.join();
-        print "join called"
-        res=[]
-        count=[]
-        for k in result:
-            res.append(k.get())
+        for key in MapKeys:
+            temp=[]
+            for target in Adj[key]:
+                temp.append(Label[target])
+            MapInput.append(temp)
 
-        for process in res:
-            for entry in process:
-                Label[entry]=process[entry];
-                count.append(process[entry])
-        print len(set(count))
-        
-    print "done"
+        pool = Pool(processes=THREADS)
+        result = pool.map(maxVote,MapInput)
 
+        index=0;
+        for newLabel in result:
+            Label[MapKeys[index]]=newLabel
+            index+=1
+            
+        print "Number of Communities:",len(set(result))," iteration:",iteration  
+        print "Time Taken: ",time.time()-start
+
+    pool.close()
