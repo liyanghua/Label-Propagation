@@ -31,8 +31,6 @@ class AdjDict(dict):
 
 def maxVote(nLabels):
     cnt = collections.defaultdict(int)
-    if nLabels==[]:
-        return None
     for i in nLabels:
         cnt[i] += 1
     maxv = max(cnt.itervalues())
@@ -58,6 +56,9 @@ if __name__ == '__main__':
         print " specify iterations use E.g. LP.py Network.txt 10"
         iterations = 5
 
+    if len(sys.argv)>3:
+        THREADS = int(sys.argv[3]) 
+
         
     Label = array.array('i',range(1000000))    # An array of type int is used since lookup for an array is O(1)
 
@@ -80,9 +81,12 @@ if __name__ == '__main__':
     data.close()
 
     #Enumerate all nodes 
-    MapKeys = Adj.keys()
+    MapKeys = array.array('i')
+    MapKeys.fromlist(Adj.keys())
 
+    #Create a pool of processes
     pool = Pool(processes=THREADS)
+    
     for iteration in range(1,iterations+1):
         start=time.time()
 
@@ -91,11 +95,12 @@ if __name__ == '__main__':
         random.shuffle(MapKeys)
 
         for key in MapKeys:
-            temp=array.array('i')
+            temp = [];
             for target in Adj[key]:
                 temp.append(Label[target])
             MapInput.append(temp)
 
+        print "Time Taken for preparing the input: ",time.time()-start
         result=[]
         result = pool.map(maxVote,MapInput)
 
@@ -107,4 +112,4 @@ if __name__ == '__main__':
         print "Number of Communities:",len(set(result))," iteration:",iteration  
         print "Time Taken: ",time.time()-start
 
-    #pool.close()
+    pool.close()
