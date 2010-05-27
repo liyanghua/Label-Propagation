@@ -1,3 +1,7 @@
+Author: Akshay Bhat
+Web: www.akshaybhat.com
+
+
 Contents:
 LP.py 
 
@@ -9,7 +13,7 @@ Description: A modified version of Label Propagation algorithm implemented in py
 
 
 ParseWiki.py 
-A small script parse the wikipedia link dataset file into an adjecancy list format
+A small script parse the wikipedia link dataset file into two different formats used by LP and LPmem.
 
 
 
