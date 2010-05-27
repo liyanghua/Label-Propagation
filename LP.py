@@ -1,19 +1,31 @@
 """
-Label Propagation algorithm using Multiprocessing 
+Label Propagation algorithm using Multiprocessing module
+
+Desc: Label Propagation algorithm using multiprocessing module
+
+Parameters:
+    1. Filename
+    2. Number of iteration of the algorithm (default: 5)
+    3. Number of processes to spawn (deafult: cpu_count())
+
+Example Call: >>LP.py NetAdj.txt 10 2
+
+Input File format:
+Each line contains a source node followed by a target node
+both are integers, the delimeter used is a whitespace
+E.g. 12 21\n
 
 Repo:       http://github.com/AKSHAYUBHAT/Label-Propagation
 
+Author:
 Name:       Akshay Bhat
 WebSite:    http://www.akshaybhat.com
-
-
 
 """
 import random, time, sys, array, logging, collections
 from multiprocessing import Pool, cpu_count
 
-# Global Variable THREAD defines number of processes to be used
-THREADS = cpu_count() 
+
 
 
 
@@ -30,6 +42,10 @@ class AdjDict(dict):
 
 
 def maxVote(nLabels):
+    """
+    This function is used byt map function, given a list of labels of neighbors
+    this function finds the most frequent labels and randomly returns one of them
+    """
     cnt = collections.defaultdict(int)
     for i in nLabels:
         cnt[i] += 1
@@ -40,6 +56,8 @@ def maxVote(nLabels):
 
                 
 if __name__ == '__main__':
+    # Variable THREAD defines number of processes to be used
+    THREADS = cpu_count() 
     Adj = AdjDict()     # A Python Dictionary since it allows faster acess
 
     #Parse the Command line Options
@@ -60,7 +78,7 @@ if __name__ == '__main__':
         THREADS = int(sys.argv[3]) 
 
         
-    Label = array.array('i',range(1000000))    # An array of type int is used since lookup for an array is O(1)
+    Label = array.array('i',range(15000000))    # An array of type int is used since lookup for an array is O(1)
 
     # Load the Data in adjecancy list and initialize labels
      
@@ -73,9 +91,7 @@ if __name__ == '__main__':
         except:
             print " error while reading the file on line:", entry
         else:
-            Label[source] = source  # initialize the label to itself 
-            Label[target] = target  # just to be sure initialize the target as well
-            Adj[source].append(target)
+           Adj[source].append(target)
 
             
     data.close()

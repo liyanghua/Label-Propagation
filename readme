@@ -1,7 +1,29 @@
+Contents:
+LP.py 
+
+Description: Label Propagation algorithm implemented in python using multiprocessing module
+
+LPmem.py
+
+Description: A modified version of Label Propagation algorithm implemented in python using multiprocessing module which stores only the Label array in memmory. Should be used for massive networks with more than few million nodes.
+
+
+ParseWiki.py 
+A small script parse the wikipedia link dataset file into an adjecancy list format
+
+
+
+
+
+
+
+
+
+Algorithm:
+
 Label Propagation Algorithm:
 
 As described in paper 
-
 
 Near linear time algorithm to detect community structures in large-scale networks
 
