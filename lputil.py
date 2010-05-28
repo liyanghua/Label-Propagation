@@ -51,16 +51,30 @@ def ParseOptions(argv):
         SizeHint=25000000
     return [filename,iterations,THREADS,SizeHint]
 
-def LoadAdjDict(filename):
+def LoadAdjDict(filename, delimeter = ' '):
+    """
+    Loads a delimited file with an edge per line
+    """
     Adj = AdjDict()
     data = open(filename)
     for entry in data:
         try:
-            source = int(entry.rstrip('\n').split(' ')[0])
-            target = int(entry.rstrip('\n').split(' ')[1])
+            source = int(entry.rstrip('\n').split(delimeter)[0])
+            target = int(entry.rstrip('\n').split(delimeter)[1])
         except:
             print " error while reading the file on line:", entry
         else:
            Adj[source].append(target)
     data.close()
     return Adj
+
+
+def WriteFrequency(filename,coms,delimeter = ' '):
+    """
+    Writes frequency of occurence of communities
+    """
+    # write the Size of each community
+    output=open(filename,'w')
+    for k in coms:
+        output.write(str(k)+delimeter+str(coms[k])+'\n')
+    output.close()

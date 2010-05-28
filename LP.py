@@ -8,7 +8,7 @@ Parameters:
     2. Number of iteration of the algorithm (default: 5)
     3. Number of processes to spawn (deafult: cpu_count())
 
-Example Call: >>LP.py NetAdj.txt 10 2
+Example Call: >>LP.py Net.txt 10 2 1000000
 
 Input File format:
 Each line contains a source node followed by a target node
@@ -22,7 +22,7 @@ Name:       Akshay Bhat
 WebSite:    http://www.akshaybhat.com
 
 """
-from lputil import AdjDict,maxVote,ParseOptions,LoadAdjDict
+from lputil import AdjDict, maxVote, ParseOptions, LoadAdjDict, WriteFrequency
 import random, time, sys, array, logging, collections
 from multiprocessing import Pool, cpu_count
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         index=0
         # write the Community membership information
         output=open("result"+str(iteration)+".txt",'w')
-        coms=deafaultdict(int);
+        coms=collections.defaultdict(int);
         for result in results:
             for newLabel in result.get():
                 Label[MapKeys[index]]=newLabel
@@ -86,11 +86,7 @@ if __name__ == '__main__':
                 output.write(str(MapKeys[index])+' '+str(newLabel)+'\n')
         output.close()
 
-        # write the Size of each community
-        output=open("Communities"+str(iteration)+".txt",'w')
-        for k in coms:
-            output.write(k+'\t'+str(coms[k])+'\n')
-        output.close()
+        WriteFrequency("Communities"+str(iteration)+".txt" , coms)
             
         print "Number of Communities:",len(coms)," iteration:",iteration  
         print "Time Taken: ",time.time()-start
