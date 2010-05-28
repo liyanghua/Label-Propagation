@@ -31,49 +31,10 @@ Name:       Akshay Bhat
 WebSite:    http://www.akshaybhat.com
 
 """
+from lputil import AdjDict,maxVote,ParseOptions
 import random, time, sys, array, logging, collections
-from multiprocessing import Pool, cpu_count
+from multiprocessing import Pool
 
-
-def maxVote(nLabels):
-    """
-    This function is used byt map function, given a list of labels of neighbors
-    this function finds the most frequent labels and randomly returns one of them
-    """
-    cnt = collections.defaultdict(int)
-    for i in nLabels:
-        cnt[i] += 1
-    maxv = max(cnt.itervalues())
-    return random.choice([k for k,v in cnt.iteritems() if v == maxv])
-
-def ParseOptions(argv):
-    """
-    Parse the Command line Options
-    """
-    THREADS = cpu_count() # Variable THREAD defines number of processes to be used
-    
-    if len(argv)>1:
-        filename = argv[1] 
-    else:
-        'Please specify file name E.g. LP.py Network.txt'
-
-    if len(argv)>2:
-        iterations = int(argv[2]) 
-    else:
-        print " Number of Iterations not specified, using 5 iterations "
-        print " specify iterations use E.g. LP.py Network.txt 10"
-        iterations = 5
-
-    if len(argv)>3:
-        THREADS = int(argv[3])
-    if len(argv)>4:
-        SizeHint = int(argv[4])
-    else:
-        print " No hint for Maximum number of nodes specified setting it to 25M"
-        SizeHint=25000000
-        
-    return [filename,iterations,THREADS,SizeHint]
-                
 if __name__ == '__main__':
 
     filename,iterations,THREADS,sizeHint=ParseOptions(sys.argv) # Parse the command line options

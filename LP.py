@@ -22,86 +22,30 @@ Name:       Akshay Bhat
 WebSite:    http://www.akshaybhat.com
 
 """
+from lputil import AdjDict,maxVote,ParseOptions,LoadAdjDict
 import random, time, sys, array, logging, collections
 from multiprocessing import Pool, cpu_count
 
 
 
-
-
-class AdjDict(dict):
-    """
-     A special Dictionary Class to hold adjecany list
-    """
-    def __missing__(self, key):
-        """
-        Missing is changed such that when a key is not found an integer array is initialized
-        """
-        self.__setitem__(key,array.array('i'))
-        return self[key]
-
-
-def maxVote(nLabels):
-    """
-    This function is used byt map function, given a list of labels of neighbors
-    this function finds the most frequent labels and randomly returns one of them
-    """
-    cnt = collections.defaultdict(int)
-    for i in nLabels:
-        cnt[i] += 1
-    maxv = max(cnt.itervalues())
-    return random.choice([k for k,v in cnt.iteritems() if v == maxv])
-
-def ParseOptions(argv):
-    """
-    Parse the Command line Options
-    """
-    THREADS = cpu_count() # Variable THREAD defines number of processes to be used
-    
-    if len(argv)>1:
-        filename = argv[1] 
-    else:
-        'Please specify file name E.g. LP.py Network.txt'
-
-    if len(argv)>2:
-        iterations = int(argv[2]) 
-    else:
-        print " Number of Iterations not specified, using 5 iterations "
-        print " specify iterations use E.g. LP.py Network.txt 10"
-        iterations = 5
-
-    if len(argv)>3:
-        THREADS = int(argv[3])
-    if len(argv)>4:
-        SizeHint = int(argv[4])
-    else:
-        print " No hint for Maximum number of nodes specified setting it to 25M"
-        SizeHint=25000000
-    return [filename,iterations,THREADS,SizeHint]
                 
 if __name__ == '__main__':
-    Adj = AdjDict()     # A Python Dictionary since it allows faster acess
+    
 
     #Parse the Command line Options
     filename,iterations,THREADS,SizeHint=ParseOptions(sys.argv) # Parse the command line options
 
-    Label = array.array('i',range(25000000))    # An array of type int is used since lookup for an array is O(1)
+    # An array of type int is used since lookup for an array is O(1)
+    # Also note that range automatically initializes the Label[key]=key
+    Label = array.array('i',range(25000000))    
 
-    # Load the Data in adjecancy list and initialize labels
+
+    # Load the Data in adjecancy list 
      
 
-    data = open(filename)
-    for entry in data:
-        try:
-            source = int(entry.rstrip('\n').split(' ')[0])
-            target = int(entry.rstrip('\n').split(' ')[1])
-        except:
-            print " error while reading the file on line:", entry
-        else:
-           Adj[source].append(target)
-
-            
-    data.close()
+    Adj = LoadAdjDict(filename)     # Loads data to a AdjDict where each value is an array of integers since it allows faster acess
+           
+   
 
     #Enumerate all nodes 
     MapKeys = array.array('i')
