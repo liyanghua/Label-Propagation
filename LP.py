@@ -52,33 +52,40 @@ def maxVote(nLabels):
     maxv = max(cnt.itervalues())
     return random.choice([k for k,v in cnt.iteritems() if v == maxv])
 
-
-
-                
-if __name__ == '__main__':
-    # Variable THREAD defines number of processes to be used
-    THREADS = cpu_count() 
-    Adj = AdjDict()     # A Python Dictionary since it allows faster acess
-
-    #Parse the Command line Options
-    # filename
-    if len(sys.argv)>1:
-        filename = sys.argv[1] 
+def ParseOptions(argv):
+    """
+    Parse the Command line Options
+    """
+    THREADS = cpu_count() # Variable THREAD defines number of processes to be used
+    
+    if len(argv)>1:
+        filename = argv[1] 
     else:
         'Please specify file name E.g. LP.py Network.txt'
 
-    if len(sys.argv)>2:
-        iterations = int(sys.argv[2]) 
+    if len(argv)>2:
+        iterations = int(argv[2]) 
     else:
         print " Number of Iterations not specified, using 5 iterations "
         print " specify iterations use E.g. LP.py Network.txt 10"
         iterations = 5
 
-    if len(sys.argv)>3:
-        THREADS = int(sys.argv[3]) 
+    if len(argv)>3:
+        THREADS = int(argv[3])
+    if len(argv)>4:
+        SizeHint = int(argv[4])
+    else:
+        print " No hint for Maximum number of nodes specified setting it to 25M"
+        SizeHint=25000000
+    return [filename,iterations,THREADS,SizeHint]
+                
+if __name__ == '__main__':
+    Adj = AdjDict()     # A Python Dictionary since it allows faster acess
 
-        
-    Label = array.array('i',range(15000000))    # An array of type int is used since lookup for an array is O(1)
+    #Parse the Command line Options
+    filename,iterations,THREADS,SizeHint=ParseOptions(sys.argv) # Parse the command line options
+
+    Label = array.array('i',range(25000000))    # An array of type int is used since lookup for an array is O(1)
 
     # Load the Data in adjecancy list and initialize labels
      
@@ -100,14 +107,16 @@ if __name__ == '__main__':
     MapKeys = array.array('i')
     MapKeys.fromlist(Adj.keys())
 
-    #Create a pool of processes
-    pool = Pool(processes=THREADS)
     
     for iteration in range(1,iterations+1):
+        pool = Pool(processes=THREADS)
         start=time.time()
 
-        # Prepare input for the Map
+        results = [] # contains result_async objects
+        
+        # MapInput stores the buffer
         MapInput = []
+        
         random.shuffle(MapKeys)
 
         for key in MapKeys:
@@ -115,17 +124,30 @@ if __name__ == '__main__':
             for target in Adj[key]:
                 temp.append(Label[target])
             MapInput.append(temp)
+            if len(MapInput)==100000:
+                results.append(pool.map_async(maxVote,MapInput))
+                MapInput=[]
+        pool.close()
+        pool.join()
+        
+        index=0
+        # write the Community membership information
+        output=open("result"+str(iteration)+".txt",'w')
+        coms=deafaultdict(int);
+        for result in results:
+            for newLabel in result.get():
+                Label[MapKeys[index]]=newLabel
+                index+=1
+                coms[newLabel]+=1
+                output.write(str(MapKeys[index])+' '+str(newLabel)+'\n')
+        output.close()
 
-        print "Time Taken for preparing the input: ",time.time()-start
-        result=[]
-        result = pool.map(maxVote,MapInput)
-
-        index=0;
-        for newLabel in result:
-            Label[MapKeys[index]]=newLabel
-            index+=1
+        # write the Size of each community
+        output=open("Communities"+str(iteration)+".txt",'w')
+        for k in coms:
+            output.write(k+'\t'+str(coms[k])+'\n')
+        output.close()
             
-        print "Number of Communities:",len(set(result))," iteration:",iteration  
+        print "Number of Communities:",len(coms)," iteration:",iteration  
         print "Time Taken: ",time.time()-start
 
-    pool.close()

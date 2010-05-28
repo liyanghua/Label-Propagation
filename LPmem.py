@@ -1,4 +1,6 @@
 """
+[ NOT Ready Yet Please Do not Use it ]
+
 Label Propagation algorithm using Multiprocessing module
 
 Desc: This is a special version which does not loads the file into memmory
@@ -63,16 +65,21 @@ def ParseOptions(argv):
         iterations = 5
 
     if len(argv)>3:
-        THREADS = int(argv[3]) 
-    return [filename,iterations,THREADS]
+        THREADS = int(argv[3])
+    if len(argv)>4:
+        SizeHint = int(argv[4])
+    else:
+        print " No hint for Maximum number of nodes specified setting it to 25M"
+        SizeHint=25000000
+        
+    return [filename,iterations,THREADS,SizeHint]
                 
 if __name__ == '__main__':
-    
 
-    filename,iterations,THREADS=ParseOptions(sys.argv) # Parse the command line options
+    filename,iterations,THREADS,sizeHint=ParseOptions(sys.argv) # Parse the command line options
 
         
-    Label = array.array('i',range(15000000))    # An array of type int is used since lookup for an array is O(1)
+    Label = array.array('i',range(sizeHint))    # An array of type int is used since lookup for an array is O(1)
 
     for iteration in range(1,iterations+1):
         #Create a pool of processes
@@ -99,7 +106,7 @@ if __name__ == '__main__':
 
                 MapKeys.append(source)
                 MapBuffer.append(temp)
-                if len(MapBuffer)==50000:                
+                if len(MapBuffer)==30000:                
                     results.append(pool.map_async(maxVote,MapBuffer))
                     MapBuffer=[]
                     print "Map called"
