@@ -29,7 +29,7 @@ def ParseOptions(argv):
     Parse the Command line Options
     """
     THREADS = cpu_count() # Variable THREAD defines number of processes to be used
-    
+    filename = ''
     if len(argv)>1:
         filename = argv[1] 
     else:
@@ -68,8 +68,20 @@ def LoadAdjDict(filename, delimeter = ' '):
     data.close()
     return Adj
 
+def WriteMembership(filename,results,MapKeys,delimeter = '\t'):
+    """
+    Writes membership of the communities as a tab delimited file
+    """
+    # write the Size of each community
+    output=open(filename,'w')
+    index=0    
+    for result in results:
+        for newLabel in result.get():
+            output.write(str(MapKeys[index])+' '+str(newLabel)+'\n')
+    output.close()
 
-def WriteFrequency(filename,coms,delimeter = ' '):
+
+def WriteFrequency(filename,coms,delimeter = '\t'):
     """
     Writes frequency of occurence of communities
     """
@@ -78,3 +90,8 @@ def WriteFrequency(filename,coms,delimeter = ' '):
     for k in coms:
         output.write(str(k)+delimeter+str(coms[k])+'\n')
     output.close()
+
+
+def ApplyAndVote(Neighbors ,Label):
+    nLabels = [ Label[k] for k in Neighbors]
+    return maxVote(nLabels)
