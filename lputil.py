@@ -74,10 +74,11 @@ def WriteMembership(filename,results,MapKeys,delimeter = '\t'):
     """
     # write the Size of each community
     output=open(filename,'w')
-    index=0    
+    index=0
     for result in results:
         for newLabel in result.get():
-            output.write(str(MapKeys[index])+' '+str(newLabel)+'\n')
+            output.write(str(MapKeys[index])+delimeter+str(newLabel)+'\n')
+            index+=1
     output.close()
 
 

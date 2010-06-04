@@ -103,7 +103,7 @@ if __name__ == '__main__':
         except:
             pass
         os.chdir(resultDir)
-        WriteMembership("result"+str(iteration)+".txt",results,MapKeys)
+        WriteMembership("Result"+str(iteration)+".txt",results,MapKeys)
         WriteFrequency("Communities"+str(iteration)+".txt" , coms)
         os.chdir('..')
 
