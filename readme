@@ -3,26 +3,27 @@ Web: www.akshaybhat.com
 
 
 Contents:
-LP.py 
+1] LP.py 
+
 Description: Label Propagation algorithm implemented in python using multiprocessing module
 
+Usage:
 
 
-LPmem.py
-[ Note that this program is still not ready since it does not randomizes the order of the nodes while performing label propagation]
+2] ParseWiki.py 
 
-Description: A modified version of Label Propagation algorithm implemented in python using multiprocessing module which stores only the Label array in memmory. Should be used for massive networks with more than few million nodes.
+Description:
 
+Usage:
 
-ParseWiki.py 
-A small script parse the wikipedia link dataset file into two different formats used by LP and LPmem.
+3] Analyze.py
 
+Description:
 
+Usage:
 
-
-
-
-
+lputil.py:
+Description:
 
 
 Algorithm:
