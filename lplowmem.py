@@ -14,7 +14,8 @@ Input File format:
 Each line contains a node followed by its neighbors delimeted by a whitespace.
 
 Hack:
-In order to share a matrix without creating extra copies and to use Pool. a hideous workaround is required to make it run on Windows
+In order to share an array without creating extra copies and to use Pool a hideous
+workaround is required to make it run on Windows
 have a look at following stack overflow answer:
 http://stackoverflow.com/questions/1675766/how-to-combine-pool-map-with-array-shared-memory-in-python-multiprocessing
 The pmodule serves that purpose alone.
@@ -115,7 +116,6 @@ if __name__ == '__main__':
     # A shared array between multiple processes of type int. It is used since lookup for an array is O(1)
     # Also note that range automatically initializes the Label[key]=key
     # The lock is set to false since when data is written to Label only main process is active and pool is closed 
-    # TO DO: This feature where Label is shared between multiple processes has not been impelemented yet
     Label = Array('i',range(SizeHint),lock=False)    
 
 
