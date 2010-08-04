@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Label Propagation algorithm using Multiprocessing module
 
